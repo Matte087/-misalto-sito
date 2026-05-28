@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiSalto PRO — La tua newsletter personalizzata</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0F2440;
+    min-height: 100vh;
+    color: #2D2019;
+  }
+  .hero {
+    background: linear-gradient(135deg, #0F2440 0%, #1B3A5C 50%, #6C5CE7 100%);
+    padding: 60px 20px 40px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: #FFD97D;
+    margin-bottom: 8px;
+  }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(255,217,125,0.2);
+    color: #FFD97D;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.8);
+    font-size: 1.05rem;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .card {
+    background: #FFFDF8;
+    max-width: 480px;
+    margin: -20px auto 40px;
+    border-radius: 20px;
+    padding: 32px 28px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .step { display: none; }
+  .step.active { display: block; }
+  .step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #0F2440;
+    margin-bottom: 6px;
+  }
+  .step-desc {
+    font-size: 0.9rem;
+    color: #6B5D52;
+    margin-bottom: 20px;
+  }
+  .progress {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .progress .dot {
+    height: 4px;
+    flex: 1;
+    border-radius: 4px;
+    background: #E8E0D4;
+    transition: background 0.3s;
+  }
+  .progress .dot.done { background: #6C5CE7; }
+  .progress .dot.current { background: #C44B28; }
+  .option-grid {
+    display: grid;
+    gap: 10px;
+  }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    background: #fff;
+    border: 2px solid #E8E0D4;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    color: #2D2019;
+    text-align: left;
+  }
+  .option-btn:hover {
+    border-color: #6C5CE7;
+    background: #F8F5FF;
+    transform: translateY(-1px);
+  }
+  .option-btn.selected {
+    border-color: #6C5CE7;
+    background: #F0EDFF;
+    box-shadow: 0 0 0 1px #6C5CE7;
+  }
+  .option-btn .emoji { font-size: 1.5rem; }
+  .option-btn .label { font-weight: 500; }
+  .option-btn .sublabel { font-size: 0.8rem; color: #6B5D52; }
+  .btn-next {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    margin-top: 20px;
+    background: #6C5CE7;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-next:hover { background: #5A4BD1; transform: translateY(-1px); }
+  .btn-next:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+  .btn-back {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #6B5D52;
+    cursor: pointer;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .final-box {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .final-box .check {
+    font-size: 3rem;
+    margin-bottom: 12px;
+  }
+  .final-box h2 {
+    font-family: 'Playfair Display', serif;
+    color: #0F2440;
+    margin-bottom: 8px;
+  }
+  .final-box p { color: #6B5D52; line-height: 1.6; }
+  .price-tag {
+    display: inline-block;
+    background: #0F2440;
+    color: #FFD97D;
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 16px 0;
+  }
+  .features {
+    text-align: left;
+    margin: 20px 0;
+    padding: 16px;
+    background: #F8F5FF;
+    border-radius: 12px;
+  }
+  .features div {
+    padding: 6px 0;
+    font-size: 0.9rem;
+    color: #2D2019;
+  }
+  .features div::before {
+    content: "✓ ";
+    color: #6C5CE7;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">⭐ PRO — €1,99/mese</div>
+  <h1>MiSalto PRO</h1>
+  <p>6 notizie personalizzate ogni settimana. Scegli la categoria, lo sport, la citta'.</p>
+</div>
+
+<div class="card">
+  <!-- PROGRESS BAR -->
+  <div class="progress">
+    <div class="dot current" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+  </div>
+
+  <!-- STEP 1: CATEGORIA -->
+  <div class="step active" id="step1">
+    <h3 class="step-title">Cosa ti interessa?</h3>
+    <p class="step-desc">Scegli una categoria per la tua newsletter settimanale.</p>
+    <div class="option-grid">
+      <button class="option-btn" onclick="selectCategoria('Eventi e feste')">
+        <span class="emoji">🎉</span>
+        <div><div class="label">Eventi e feste</div><div class="sublabel">Fiere, sagre, mercatini, inaugurazioni</div></div>
+      </button>
+      <button class="option-btn" onclick="selectCategoria('Sport')">
+        <span class="emoji">⚽</span>
+        <div><div class="label">Sport</div><div class="sublabel">Calcio, basket, tennis, F1, ciclismo, padel</div></div>
+      </button>
+      <button class="option-btn" onclick="selectCategoria('Offerte di lavoro')">
+        <span class="emoji">💼</span>
+        <div><div class="label">Offerte di lavoro</div><div class="sublabel">Le migliori opportunita' nella tua citta'</div></div>
+      </button>
+      <button class="option-btn" onclick="selectCategoria('Concerti')">
+        <span class="emoji">🎵</span>
+        <div><div class="label">Concerti</div><div class="sublabel">Musica dal vivo, festival, eventi musicali</div></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: SPORT (solo se categoria = Sport) -->
+  <div class="step" id="step2-sport">
+    <h3 class="step-title">Quale sport?</h3>
+    <p class="step-desc">Scegli il tuo sport preferito.</p>
+    <div class="option-grid">
+      <button class="option-btn" onclick="selectSport('Calcio')">
+        <span class="emoji">⚽</span>
+        <div><div class="label">Calcio</div><div class="sublabel">La Liga, Champions, squadre locali</div></div>
+      </button>
+      <button class="option-btn" onclick="selectSport('Basket')">
+        <span class="emoji">🏀</span>
+        <div><div class="label">Basket</div><div class="sublabel">ACB, Euroliga, squadre locali</div></div>
+      </button>
+      <button class="option-btn" onclick="selectSport('Tennis')">
+        <span class="emoji">🎾</span>
+        <div><div class="label">Tennis</div><div class="sublabel">ATP, Alcaraz, tornei internazionali</div></div>
+      </button>
+      <button class="option-btn" onclick="selectSport('F1/MotoGP')">
+        <span class="emoji">🏎️</span>
+        <div><div class="label">F1 / MotoGP</div><div class="sublabel">Gran Premi, piloti spagnoli</div></div>
+      </button>
+      <button class="option-btn" onclick="selectSport('Ciclismo')">
+        <span class="emoji">🚴</span>
+        <div><div class="label">Ciclismo</div><div class="sublabel">Vuelta, Tour, grandi giri</div></div>
+      </button>
+      <button class="option-btn" onclick="selectSport('Padel')">
+        <span class="emoji">🏸</span>
+        <div><div class="label">Padel</div><div class="sublabel">World Padel Tour, tornei nazionali</div></div>
+      </button>
+    </div>
+    <button class="btn-back" onclick="goBack(1)">← Torna indietro</button>
+  </div>
+
+  <!-- STEP 3: CITTA' -->
+  <div class="step" id="step3">
+    <h3 class="step-title">Dove?</h3>
+    <p class="step-desc">Scegli la citta' o tutta la Spagna.</p>
+    <div class="option-grid">
+      <button class="option-btn" onclick="selectCitta('Valencia')">
+        <span class="emoji">🏖️</span><div class="label">Valencia</div>
+      </button>
+      <button class="option-btn" onclick="selectCitta('Barcellona')">
+        <span class="emoji">🏗️</span><div class="label">Barcellona</div>
+      </button>
+      <button class="option-btn" onclick="selectCitta('Madrid')">
+        <span class="emoji">🏛️</span><div class="label">Madrid</div>
+      </button>
+      <button class="option-btn" onclick="selectCitta('Málaga')">
+        <span class="emoji">☀️</span><div class="label">Málaga</div>
+      </button>
+      <button class="option-btn" onclick="selectCitta('Granada')">
+        <span class="emoji">🕌</span><div class="label">Granada</div>
+      </button>
+      <button class="option-btn" onclick="selectCitta('Siviglia')">
+        <span class="emoji">💃</span><div class="label">Siviglia</div>
+      </button>
+      <button class="option-btn" onclick="selectCitta('Tutta la Spagna')" style="border-color:#C44B28;">
+        <span class="emoji">🇪🇸</span><div class="label" style="color:#C44B28;font-weight:700;">Tutta la Spagna</div>
+      </button>
+    </div>
+    <button class="btn-back" onclick="goBack(2)">← Torna indietro</button>
+  </div>
+
+  <!-- STEP FINALE -->
+  <div class="step" id="step-final">
+    <div class="final-box">
+      <div class="check">🎉</div>
+      <h2>Perfetto!</h2>
+      <p>La tua newsletter PRO e' pronta:</p>
+      <div class="features">
+        <div id="recap-cat">Categoria: —</div>
+        <div id="recap-sport" style="display:none;">Sport: —</div>
+        <div id="recap-citta">Luogo: —</div>
+        <div>6 notizie personalizzate ogni settimana</div>
+        <div>3 notizie top + 3 chicche nascoste</div>
+      </div>
+      <div class="price-tag">€1,99 / mese</div>
+      <p style="font-size:0.85rem;margin-top:8px;">Cancelli quando vuoi, in un click.</p>
+      <button class="btn-next" onclick="attivaPro()" style="margin-top:16px;">Attiva MiSalto PRO →</button>
+      <button class="btn-back" onclick="goBack(3)">← Modifica scelte</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let scelte = { categoria: '', sport: '', citta: '' };
+
+// Leggi parametri URL (per chi arriva dal funnel email)
+const params = new URLSearchParams(window.location.search);
+const emailParam = params.get('email') || params.get('e') || '';
+
+function showStep(stepId) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(stepId).classList.add('active');
+  // Aggiorna progress
+  const dots = ['dot1','dot2','dot3'];
+  const stepMap = {'step1': 0, 'step2-sport': 1, 'step3': 1, 'step-final': 2};
+  const current = stepMap[stepId] || 0;
+  dots.forEach((d, i) => {
+    const el = document.getElementById(d);
+    el.className = 'dot' + (i < current ? ' done' : i === current ? ' current' : '');
+  });
+}
+
+function selectCategoria(cat) {
+  scelte.categoria = cat;
+  scelte.sport = '';
+  // Highlight
+  document.querySelectorAll('#step1 .option-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  setTimeout(() => {
+    if (cat === 'Sport') {
+      showStep('step2-sport');
+    } else {
+      showStep('step3');
+    }
+  }, 200);
+}
+
+function selectSport(sport) {
+  scelte.sport = sport;
+  document.querySelectorAll('#step2-sport .option-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  setTimeout(() => showStep('step3'), 200);
+}
+
+function selectCitta(citta) {
+  scelte.citta = citta;
+  document.querySelectorAll('#step3 .option-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  // Aggiorna recap
+  document.getElementById('recap-cat').textContent = 'Categoria: ' + scelte.categoria;
+  if (scelte.sport) {
+    document.getElementById('recap-sport').style.display = 'block';
+    document.getElementById('recap-sport').textContent = 'Sport: ' + scelte.sport;
+  } else {
+    document.getElementById('recap-sport').style.display = 'none';
+  }
+  document.getElementById('recap-citta').textContent = 'Luogo: ' + scelte.citta;
+  setTimeout(() => showStep('step-final'), 200);
+}
+
+function goBack(fromStep) {
+  if (fromStep === 1) showStep('step1');
+  else if (fromStep === 2) {
+    if (scelte.categoria === 'Sport') showStep('step2-sport');
+    else showStep('step1');
+  }
+  else if (fromStep === 3) showStep('step3');
+}
+
+function attivaPro() {
+  // Salva attributi su Brevo via API
+  if (emailParam) {
+    salvaSuBrevo(emailParam);
+  }
+  // Redirect a pagamento (da implementare)
+  alert('Grazie! Per ora MiSalto PRO e\' in fase di lancio. Ti contatteremo presto a ' + (emailParam || 'la tua email') + '!');
+}
+
+function salvaSuBrevo(email) {
+  const attrs = {
+    PIANO: 'PRO',
+    CATEGORIA: scelte.categoria,
+    CITTA_PRO: scelte.citta
+  };
+  if (scelte.sport) {
+    attrs.SPORT = scelte.sport;
+  }
+  // Salva tramite Netlify Function (chiave nascosta lato server)
+  fetch('/.netlify/functions/salva-pro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, attributi: attrs })
+  }).catch(e => console.log('Errore salvataggio:', e));
+}
+</script>
+
+</body>
+</html>

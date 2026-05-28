@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grazie! — MiSalto</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: linear-gradient(135deg, #0F2440 0%, #1B3A5C 50%, #C44B28 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #FFFDF8;
+    max-width: 460px;
+    width: 100%;
+    border-radius: 24px;
+    padding: 48px 36px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .emoji {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    animation: pop 0.5s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    color: #0F2440;
+    margin-bottom: 12px;
+  }
+  p {
+    font-size: 1.05rem;
+    color: #6B5D52;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .loading { color: #999; font-size: 0.9rem; margin-top: 16px; }
+  .btn {
+    display: inline-block;
+    margin-top: 28px;
+    padding: 14px 32px;
+    background: #F7A825;
+    color: #0F2440;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: transform 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .pro-box {
+    margin-top: 24px;
+    padding: 18px;
+    background: #F0EDFF;
+    border-radius: 14px;
+    border: 1px solid #6C5CE7;
+  }
+  .pro-box p { color: #2D2019; font-size: 0.95rem; margin-bottom: 12px; }
+  .pro-btn {
+    display: inline-block;
+    padding: 12px 26px;
+    background: #6C5CE7;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="emoji" id="emoji">🎉</div>
+  <h1 id="titolo">Grazie per la risposta!</h1>
+  <p id="messaggio">La tua risposta è stata salvata.</p>
+  <p>La prossima email sarà ancora più personalizzata per te.</p>
+  <p class="loading" id="loading">Salvataggio in corso…</p>
+
+  <div class="pro-box" id="proBox" style="display:none;">
+    <p>⭐ Vuoi ancora di più? Con <b>MiSalto PRO</b> ricevi ogni settimana eventi, lavoro o sport dalla tua città.</p>
+    <a href="#" class="pro-btn" id="proLink">Scopri MiSalto PRO →</a>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const r = params.get('r') || '';
+  const email = params.get('e') || '';
+
+  // Messaggi personalizzati per tipo di risposta
+  const MESSAGGI = {
+    piano_free: { emoji: '👍', titolo: 'Perfetto, resti con noi!', msg: 'Continuerai a ricevere la newsletter gratuita ogni settimana, personalizzata sulla tua città.' },
+    default: { emoji: '🎉', titolo: 'Grazie per la risposta!', msg: 'La tua risposta è stata salvata.' }
+  };
+
+  const info = MESSAGGI[r] || MESSAGGI.default;
+  document.getElementById('emoji').textContent = info.emoji;
+  document.getElementById('titolo').textContent = info.titolo;
+  document.getElementById('messaggio').textContent = info.msg;
+
+  // Mostra box PRO (tranne se ha scelto free)
+  if (r !== 'piano_free' && email) {
+    const proBox = document.getElementById('proBox');
+    proBox.style.display = 'block';
+    document.getElementById('proLink').href = 'https://misalto.com/pro.html?e=' + encodeURIComponent(email);
+  }
+
+  // Salva su Brevo tramite la Netlify Function
+  if (r && email) {
+    fetch('/.netlify/functions/salva-risposta?r=' + encodeURIComponent(r) + '&e=' + encodeURIComponent(email))
+      .then(res => res.json())
+      .then(() => {
+        document.getElementById('loading').textContent = '✓ Salvato';
+        setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 1500);
+      })
+      .catch(() => {
+        document.getElementById('loading').style.display = 'none';
+      });
+  } else {
+    document.getElementById('loading').style.display = 'none';
+  }
+</script>
+</body>
+</html>
