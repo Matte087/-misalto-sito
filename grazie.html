@@ -103,6 +103,7 @@
   // Messaggi personalizzati per tipo di risposta
   const MESSAGGI = {
     piano_free: { emoji: '👍', titolo: 'Perfetto, resti con noi!', msg: 'Continuerai a ricevere la newsletter gratuita ogni settimana, personalizzata sulla tua città.' },
+    pro_attivato: { emoji: '🎉', titolo: 'Benvenuto in MiSalto PRO!', msg: 'Il tuo abbonamento è attivo. Riceverai la tua prima newsletter PRO personalizzata alla prossima uscita settimanale.' },
     default: { emoji: '🎉', titolo: 'Grazie per la risposta!', msg: 'La tua risposta è stata salvata.' }
   };
 
@@ -111,15 +112,15 @@
   document.getElementById('titolo').textContent = info.titolo;
   document.getElementById('messaggio').textContent = info.msg;
 
-  // Mostra box PRO (tranne se ha scelto free)
-  if (r !== 'piano_free' && email) {
+  // Mostra box PRO solo a chi NON ha scelto free e NON ha appena attivato PRO
+  if (r !== 'piano_free' && r !== 'pro_attivato' && email) {
     const proBox = document.getElementById('proBox');
     proBox.style.display = 'block';
     document.getElementById('proLink').href = 'https://misalto.com/pro.html?e=' + encodeURIComponent(email);
   }
 
-  // Salva su Brevo tramite la Netlify Function
-  if (r && email) {
+  // Salva su Brevo tramite la Netlify Function (NON per pro_attivato: PIANO=PRO lo metti tu a mano)
+  if (r && email && r !== 'pro_attivato') {
     fetch('/.netlify/functions/salva-risposta?r=' + encodeURIComponent(r) + '&e=' + encodeURIComponent(email))
       .then(res => res.json())
       .then(() => {
