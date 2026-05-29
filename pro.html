@@ -298,7 +298,7 @@
       </div>
       <div class="price-tag">€1,99 / mese</div>
       <p style="font-size:0.85rem;margin-top:8px;">Cancelli quando vuoi, in un click.</p>
-      <button class="btn-next" onclick="attivaPro()" style="margin-top:16px;">Attiva MiSalto PRO →</button>
+      <div id="paypal-button-container-P-34H7436281930071DNIM4ZDI" style="margin-top:16px;max-width:320px;margin-left:auto;margin-right:auto;"></div>
       <button class="btn-back" onclick="goBack(3)">← Modifica scelte</button>
     </div>
   </div>
@@ -372,12 +372,7 @@ function goBack(fromStep) {
 }
 
 function attivaPro() {
-  // Salva attributi su Brevo via API
-  if (emailParam) {
-    salvaSuBrevo(emailParam);
-  }
-  // Redirect a pagamento (da implementare)
-  alert('Grazie! Per ora MiSalto PRO e\' in fase di lancio. Ti contatteremo presto a ' + (emailParam || 'la tua email') + '!');
+  // Sostituita dal pulsante PayPal (vedi sotto)
 }
 
 function salvaSuBrevo(email) {
@@ -390,12 +385,41 @@ function salvaSuBrevo(email) {
     attrs.SPORT = scelte.sport;
   }
   // Salva tramite Netlify Function (chiave nascosta lato server)
-  fetch('/.netlify/functions/salva-pro', {
+  return fetch('/.netlify/functions/salva-pro', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email, attributi: attrs })
   }).catch(e => console.log('Errore salvataggio:', e));
 }
+</script>
+
+<!-- PayPal SDK + pulsante abbonamento -->
+<script src="https://www.paypal.com/sdk/js?client-id=AfbZQEEv0eTiFEIN9eZC7uJ0-oCazxe2zvx63AUNhGW83TD3jtjLofEKgKDgSmM7ohs8AsHMLUYYbbBm&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          plan_id: 'P-34H7436281930071DNIM4ZDI'
+        });
+      },
+      onApprove: function(data, actions) {
+        // 1. Salva i dati PRO su Brevo (categoria/sport/citta gia' scelti)
+        var email = emailParam || prompt('Inserisci la tua email per ricevere la newsletter PRO:') || '';
+        var salva = email ? salvaSuBrevo(email) : Promise.resolve();
+        // 2. Vai alla pagina di ringraziamento PRO
+        salva.then(function() {
+          window.location.href = '/grazie.html?r=pro_attivato&e=' + encodeURIComponent(email);
+        }).catch(function() {
+          window.location.href = '/grazie.html?r=pro_attivato&e=' + encodeURIComponent(email);
+        });
+      }
+  }).render('#paypal-button-container-P-34H7436281930071DNIM4ZDI');
 </script>
 
 </body>
