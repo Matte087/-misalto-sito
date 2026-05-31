@@ -648,7 +648,7 @@ btn.addEventListener('click', function(){
   formData.email = email;
 
   // Invia email+nome a Brevo
-  fetch('https://api.brevo.com/v3/contacts',{method:'POST',headers:{'Content-Type':'application/json','api-key':'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'},body:JSON.stringify({email:email,listIds:[5],attributes:{NOME:nome},updateEnabled:true})}).then(r=>{if(r.ok||r.status===204||r.status===201){questions.style.display='block';cityStep.style.display='block';questions.scrollIntoView({behavior:'smooth'});}else{return r.json().then(data=>{if(data.code==='duplicate_parameter'){questions.style.display='block';cityStep.style.display='block';questions.scrollIntoView({behavior:'smooth'});}else{alert('Errore: riprova.');}});}}).catch(()=>{alert('Errore di connessione. Riprova.');});
+  fetch('/.netlify/functions/iscrivi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,attributi:{NOME:nome}})}).then(r=>{if(r.ok||r.status===204||r.status===201){questions.style.display='block';cityStep.style.display='block';questions.scrollIntoView({behavior:'smooth'});}else{return r.json().then(data=>{if(data.code==='duplicate_parameter'){questions.style.display='block';cityStep.style.display='block';questions.scrollIntoView({behavior:'smooth'});}else{alert('Errore: riprova.');}});}}).catch(()=>{alert('Errore di connessione. Riprova.');});
 
 });
 
@@ -661,7 +661,7 @@ document.querySelectorAll('.city-btn').forEach(btn=>{
     formData.citta = this.dataset.value;
 
     // Salva città su Brevo
-    fetch('https://api.brevo.com/v3/contacts/'+encodeURIComponent(formData.email),{method:'PUT',headers:{'Content-Type':'application/json','api-key':'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'},body:JSON.stringify({attributes:{CITTA:formData.citta}})}).catch(()=>{});
+    fetch('/.netlify/functions/iscrivi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:formData.email,attributi:{CITTA:formData.citta}})}).catch(()=>{});
 
     setTimeout(()=>{
       withStep.style.display = 'block';
@@ -680,7 +680,7 @@ document.querySelectorAll('.with-btn').forEach(btn=>{
     formData.conChi = this.dataset.value;
 
     // Salva con chi su Brevo
-    fetch('https://api.brevo.com/v3/contacts/'+encodeURIComponent(formData.email),{method:'PUT',headers:{'Content-Type':'application/json','api-key':'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'},body:JSON.stringify({attributes:{CON_CHI:formData.conChi}})}).catch(()=>{});
+    fetch('/.netlify/functions/iscrivi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:formData.email,attributi:{CON_CHI:formData.conChi}})}).catch(()=>{});
 
     setTimeout(()=>{
       whenStep.style.display = 'block';
@@ -699,7 +699,7 @@ document.querySelectorAll('.when-btn').forEach(btn=>{
     formData.quando = this.dataset.value;
 
     // Salva quando su Brevo
-    fetch('https://api.brevo.com/v3/contacts/'+encodeURIComponent(formData.email),{method:'PUT',headers:{'Content-Type':'application/json','api-key':'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'},body:JSON.stringify({attributes:{QUANDO:formData.quando}})}).catch(()=>{});
+    fetch('/.netlify/functions/iscrivi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:formData.email,attributi:{QUANDO:formData.quando}})}).catch(()=>{});
 
     setTimeout(()=>{
       finalMessage.style.display = 'block';
@@ -744,7 +744,7 @@ window.addEventListener('load', function(){
     const email = params.get('e');
 
     if(r && email){
-        const BREVO_KEY = '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';
+        // chiave gestita lato server (Netlify function)
         const mapping = {
             'sp1': {attr: 'SPAGNOLO', val: 'Non lo parlo'},
             'sp2': {attr: 'SPAGNOLO', val: 'Lo capisco'},
@@ -765,10 +765,8 @@ window.addEventListener('load', function(){
         if(mapping[r]){
             const attrs = {};
             attrs[mapping[r].attr] = mapping[r].val;
-            fetch('https://api.brevo.com/v3/contacts/'+encodeURIComponent(email),{
-                method:'PUT',
-                headers:{'Content-Type':'application/json','api-key':BREVO_KEY},
-                body:JSON.stringify({attributes: attrs})
+            fetch('/.netlify/functions/salva-risposta?r='+encodeURIComponent(r)+'&e='+encodeURIComponent(email),{
+                method:'GET'
             }).catch(function(){});
         }
     }
